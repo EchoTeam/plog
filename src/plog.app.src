@@ -5,8 +5,7 @@
   {registered, [plog]},
   {applications, [
                   kernel,
-                  stdlib,
-                  mod_gen
+                  stdlib
                  ]},
   {mod, { plog_app, []}},
   {env, [

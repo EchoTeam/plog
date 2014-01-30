@@ -32,10 +32,9 @@ update_config() ->
             ["should_log(", Spec, ") -> ", atom_to_list(Result), ";"]
             || {Spec, Result} <- application:get_env(plog, enable_for, [])
               ],
-    TailSpec = [
-            ["should_log(_) -> false."]
-            ],
-    Spec = ModSpec ++ FuncSpec ++ TailSpec,
+    TailSpec = [["should_log(_) -> false."]],
+    Spec = ModSpec ++ [FuncSpec ++ TailSpec],
+    lager:info("Spec = ~s~n", [Spec]),
     mod_gen:go(Spec).
 
 
