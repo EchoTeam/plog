@@ -1,0 +1,13 @@
+*.swp
+*.swo
+*.swn
+*.beam
+
+deps/
+ebin/
+log/
+.eunit/
+erl_crash.dump
+
+tags
+erl_deps.plt

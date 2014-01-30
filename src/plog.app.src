@@ -1,0 +1,15 @@
+{application, plog,
+ [
+  {description, "local stats"},
+  {vsn, "1.0.0"},
+  {registered, [plog]},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  mod_gen
+                 ]},
+  {mod, { plog_app, []}},
+  {env, [
+    {enable_for, []}
+  ]}
+ ]}.
