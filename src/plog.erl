@@ -46,6 +46,7 @@
 %% Capturing different categories of timing samples can be enabled on different
 %% production machines. All categories are captured in staging environment.
 
+-spec should_log(term()) -> boolean().
 should_log(Category) ->
     try plog_cconfig:should_log(Category) 
     catch
@@ -527,32 +528,30 @@ delta_test_() ->
     }.
 
 delta_setup() ->
-    meck:new(jcfg).
+    meck:new(plog_cconfig, [non_strict]).
 
 delta_cleanup(_) ->
     meck:unload().
 
-delta_jcfg_val(Value) ->
-    meck:expect(jcfg, val, fun(_Key) ->
-        Value
-    end).
+delta_plog_cconfig_val(Value) ->
+    meck:expect(plog_cconfig, should_log, 1, Value).
 
 test_delta_general() ->
     F = fun() -> someresult end,
     [begin
-        delta_jcfg_val(JcfgVal),
+        delta_plog_cconfig_val(JcfgVal),
         ?assertEqual(someresult, delta(cat, sample, F))
     end || JcfgVal <- [false, true]],
 
-    delta_jcfg_val(true),
+    delta_plog_cconfig_val(true),
     ?assertEqual(ok, delta(cat, sample, 1)),
 
-    delta_jcfg_val(false),
+    delta_plog_cconfig_val(false),
     ?assertEqual(ok, delta(cat, sample, something_else)).
 
 test_delta_error() ->
     F = fun() -> erlang:raise(error, someerror, []) end,
-    delta_jcfg_val(true),
+    delta_plog_cconfig_val(true),
     ?assertEqual(ok, try
             delta(cat, sample, F)
         catch

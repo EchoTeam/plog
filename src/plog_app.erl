@@ -20,7 +20,6 @@ stop(_State) ->
 config_change(_Changed, _New, _Removed) ->
     update_config().
 
-
 update_config() ->
     lager:info("Updating plog's config"),
     ModName = plog_cconfig,
@@ -34,9 +33,5 @@ update_config() ->
               ],
     TailSpec = [["should_log(_) -> false."]],
     Spec = ModSpec ++ [FuncSpec ++ TailSpec],
-    lager:info("Spec = ~s~n", [Spec]),
     mod_gen:go(Spec).
-
-
-
 
