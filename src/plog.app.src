@@ -9,6 +9,5 @@
                  ]},
   {mod, { plog_app, []}},
   {env, [
-    {enable_for, []}
   ]}
  ]}.

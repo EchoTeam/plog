@@ -75,6 +75,6 @@ erl_deps.plt: erl_std.plt
 
 dialyzer: all $(USE_PLT)
 	$(DIALYZER) ebin -I deps --plts $(USE_PLT) | \
-		fgrep -vf .dialyzer-ignore-warnings
+		grep -vf .dialyzer-ignore-warnings
 
 

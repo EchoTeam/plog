@@ -1,5 +1,5 @@
 %%% 
-%%% Copyright (c) 2009 JackNyfe. All rights reserved.
+%%% Copyright (c) 2009-2014 JackNyfe. All rights reserved.
 %%% THIS SOFTWARE IS PROPRIETARY AND CONFIDENTIAL. DO NOT REDISTRIBUTE.
 %%% 
 
@@ -26,6 +26,8 @@
     extract/0,
     extract/1,
     extract_sample/1,
+    print/0,
+    print/1,
     format/1,
     magnitude/2,
     magnitude/3,
@@ -48,10 +50,9 @@
 
 -spec should_log(term()) -> boolean().
 should_log(Category) ->
-    try plog_cconfig:should_log(Category) 
-    catch
-        _:_ -> 
-            false
+    case application:get_env(plog, Category, false) of
+        true -> true;
+        _    -> false
     end.
 
 -spec delta(Category :: term(), SampleName :: term(), Arg :: term()) -> 'ok' | term().
@@ -260,6 +261,14 @@ sort_snd(SortArgs, {Key, List}) ->
 slot_name_as_group_header([{{_SampleName, SlotName}, _}|_] = List) ->
     {SlotName, [V || {_, V} <- List]}.
 
+print() ->
+    print(extract()).
+
+print(AtomOrFun) when is_atom(AtomOrFun); is_function(AtomOrFun, 1) ->
+    print(extract(AtomOrFun));
+print(GroupedList) ->
+    io:format("~s", [format(GroupedList)]).
+
 format(GroupedList) ->
     lists:flatten(lists:map(fun
     ({ComboType, [{SampleName, _WithinSlot, _Result, _Mavg}|_] = List}) 
@@ -302,7 +311,13 @@ mavg_info_columns(Mavg) ->
          [integer_to_list(Period), "avg"]].
 
 format_1d_grid(PercentilePoints, List, SlotName) ->
-    Unit = case SlotName of delta -> ms; count -> number; size -> bytes; value -> value; magnitude -> magnitude end,
+    Unit = case SlotName of 
+        delta -> ms; 
+        count -> number; 
+        size  -> bytes; 
+        value -> value; 
+        magnitude -> magnitude 
+    end,
     Header = [Unit, eps, epm],
     Body = [begin
         {Err1, Err2} = case Result of
@@ -516,50 +531,3 @@ transpose([[]|XSS]) -> transpose(XSS);
 transpose([[X|XS]|XSS]) ->
     [[X|[H||[H|_]<-XSS]] | transpose([XS|[T||[_|T]<-XSS]])].
 
--ifdef(TEST).
--include_lib("eunit/include/eunit.hrl").
-
-delta_test_() ->
-    {setup,
-        fun delta_setup/0,
-        fun delta_cleanup/1,
-        [{"general", fun test_delta_general/0},
-        {"error", fun test_delta_error/0}]
-    }.
-
-delta_setup() ->
-    meck:new(plog_cconfig, [non_strict]).
-
-delta_cleanup(_) ->
-    meck:unload().
-
-delta_plog_cconfig_val(Value) ->
-    meck:expect(plog_cconfig, should_log, 1, Value).
-
-test_delta_general() ->
-    F = fun() -> someresult end,
-    [begin
-        delta_plog_cconfig_val(JcfgVal),
-        ?assertEqual(someresult, delta(cat, sample, F))
-    end || JcfgVal <- [false, true]],
-
-    delta_plog_cconfig_val(true),
-    ?assertEqual(ok, delta(cat, sample, 1)),
-
-    delta_plog_cconfig_val(false),
-    ?assertEqual(ok, delta(cat, sample, something_else)).
-
-test_delta_error() ->
-    F = fun() -> erlang:raise(error, someerror, []) end,
-    delta_plog_cconfig_val(true),
-    ?assertEqual(ok, try
-            delta(cat, sample, F)
-        catch
-            error:someerror ->
-                ok;
-            _:_ ->
-                no
-        end
-    ).
-
--endif.

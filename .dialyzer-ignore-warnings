@@ -1,3 +1,1 @@
-plog.erl:456: Function format_grid/1 will never be called
-# Unknown function
- plog_cconfig:should_log/1
+plog.erl:\w*: Function format_grid/1 will never be called
