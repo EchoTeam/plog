@@ -23,13 +23,13 @@ it be json to xml convertation. With plog you could simply write:
             json_to_xml_converter:convert(Json)
         end).
 
-Now you should enable `hot_part` for activating logging: 
-`application:set_env(plog, hot_part, true)`.
+Now you should turn `plog` application (e.g. `application:start(plog)`) and enable 
+category `hot_part` for activating logging: `application:set_env(plog, hot_part, true)`.
 
 That is all.
 
 Now you could watch the statistics: attach to the node and execute `plog:print()` or
-`plog:print(delta)` to print only delta-statistic. The output would be something like: 
+`plog:print(delta)` to print only delta-statistic. The output would be looks like: 
 
         json_to_xml                                     990epm,20ms@95%,20ms@98%
            ms   eps epm
@@ -48,8 +48,8 @@ Now you could watch the statistics: attach to the node and execute `plog:print()
           750     0   0    [0    0    0    0      |10] 300avg
         total    16 990
 
-It is mean that in the last minute it was about 990 event in total. 169 events took
-<= 1 ms to execute, 308 events took from 1 to 3 ms to execute and so on. You could
+It is mean that in the last minute it was about 990 event in total. 169 events per minute took
+<= 1 ms to execute, 308 events took from 1 to 3 ms to execute and so on. You could also
 see that 95% (and 98% in particular this case too) of all events took less than 20ms.
 
 Please refer to `src/plog.erl` to obtain more information.

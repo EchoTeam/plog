@@ -53,3 +53,4 @@ delta_error_test(_Config) ->
     set_val(cat, true),
     ?assertException(error, someerror, plog:delta(cat, sample, F)).
 
+
