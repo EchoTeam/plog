@@ -1,8 +1,3 @@
-%%% 
-%%% Copyright (c) 2009-2014 JackNyfe. All rights reserved.
-%%% THIS SOFTWARE IS PROPRIETARY AND CONFIDENTIAL. DO NOT REDISTRIBUTE.
-%%% 
-
 %%%
 %%% [Asynchronous] Performance Log Module
 %%%
